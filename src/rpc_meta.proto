@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package srpc;
+
+message RpcMeta {
+	string service_id = 1;
+	string method_id  = 2;
+	int32  data_size  = 3;
+}
+
+

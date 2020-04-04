@@ -1,0 +1,18 @@
+syntax = "proto3";
+package echo;
+option cc_generic_services = true;
+ 
+message EchoRequest
+{
+	string question = 1;
+};
+
+message EchoResponse
+{
+	int32 result = 1;
+};
+
+service EchoService
+{
+	rpc Get(EchoRequest) returns (EchoResponse);
+}
