@@ -8,13 +8,15 @@
 
 class Channel : public ::google::protobuf::RpcChannel {
 	public:
-		Channel(std::string ip, int port);
+		Channel();
 
-		virtual ~Channel() {}
+		virtual ~Channel();
 
+		int Init(std::string ip, int port);
+
+		int Close();
 	private:
 
-		int Init();
 
 		void CallMethod(const ::google::protobuf::MethodDescriptor *method,
 				::google::protobuf::RpcController *controller,
@@ -24,8 +26,8 @@ class Channel : public ::google::protobuf::RpcChannel {
 
 		std::string ip_;
 		int port_;
-		std::shared_ptr<boost::asio::io_service> io_;
-		std::shared_ptr<boost::asio::ip::tcp::socket> socket_;
+
+		int fd_;
 };
 
 #endif //__CHANNEL_H__

@@ -5,22 +5,44 @@
 #include "channel.h"
 #include "rpc_meta.pb.h"
 
-Channel::Channel(std::string ip, int port): ip_(ip), port_(port)  {
-	Init();
+Channel::Channel()  {
+	fd_ = -1;
 }
 
-int Channel::Init() {
-	io_ = std::make_shared<boost::asio::io_service>();
-	socket_ = std::make_shared<boost::asio::ip::tcp::socket>(*io_);
+Channel::~Channel() {
+	Close();
+}
 
-	boost::asio::ip::tcp::endpoint ep(
-			boost::asio::ip::address::from_string(ip_), port_);
-	try {
-		socket_->connect(ep);
-	} catch (boost::system::system_error se) {
-		std::cout << "connect fail. error code: " << se.code() << std::endl;
+int Channel::Close() {
+	if (0 <= fd_) {
+		while(close(fd_) && (EINTR == errno)) {
+			//
+		}
+		fd_ = -1;
+	}
+	return 0;
+}
+
+int Channel::Init(std::string ip, int port) {
+	ip_ = ip;
+	port_ = port;
+	struct sockaddr_in svr_addr;
+	bzero(&svr_addr, sizeof(svr_addr));
+	svr_addr.sin_family = AF_INET;
+	svr_addr.sin_port = htons(port_);
+	svr_addr.sin_addr.s_addr = inet_addr(ip_.c_str());
+
+	fd_ = socket(AF_INET, SOCK_STREAM, 0);
+	if (fd_ < 0) {
+		perror("create socket failed.");
 		return -1;
 	}
+	int ret = connect(fd_, (struct sockaddr *)&svr_addr, sizeof(svr_addr));
+	if (ret < 0) {
+		perror("connect fail.");
+		return -1;
+	}
+
 	return 0;
 }
 
@@ -45,21 +67,34 @@ void Channel::CallMethod(const ::google::protobuf::MethodDescriptor *method,
 	serialized_str += meta_str;
 	serialized_str += data_str;
 
-
 	std::cout << "----------------------" << std::endl;
-	std::cout << "send info service" << meta.service_id() << std::endl;
-	std::cout << "send info method" << meta.method_id() << std::endl;
-	std::cout << "send info data size" << meta.data_size() << std::endl;
-	std::cout << "send info meta size" << meta_str.size() << std::endl;
-//		std::cout << "recev info data" << << std::endl;
+	std::cout << "send info service " << meta.service_id() << std::endl;
+	std::cout << "send info method " << meta.method_id() << std::endl;
+	std::cout << "send info data size " << meta.data_size() << std::endl;
+	std::cout << "send info meta size " << meta_str.size() << std::endl;
 
-	socket_->send(boost::asio::buffer(serialized_str));
+	send(fd_, serialized_str.c_str(), serialized_str.size(), MSG_WAITALL);
 
-	char resp_data_size[sizeof(int)];
-	socket_->receive(boost::asio::buffer(resp_data_size));
-	int resp_data_len = *(int *)resp_data_size;
+	int resp_data_len = 0; 
+	do {
+		int nread = recv(fd_, (char *)&resp_data_len, sizeof(int), MSG_WAITALL);
+		if (nread < 0) {
+			if (EINTR == errno) {
+				continue;
+			} else if (EAGAIN == errno) {
+				continue;
+			} else {
+				//close socket
+				return ;
+			}
+		} else {
+			break;
+		}
+	} while(true);
+	std::cout << "recev data len" << resp_data_len << std::endl;
 	std::vector<char> resp_buf(resp_data_len, 0);
-	socket_->receive(boost::asio::buffer(resp_buf));
+	recv(fd_, (char *)&resp_buf[0], resp_data_len, MSG_WAITALL);
+//	std::cout << "recev data " << resp_buf << std::endl;
 	response->ParseFromString(std::string(&resp_buf[0], resp_buf.size()));
 	return ;
 }

@@ -13,26 +13,31 @@ class Server {
 
 		int Start(std::string ip, int port);
 
+		int Close();
+
 		int AddService(google::protobuf::Service *service, bool ownership);
 
-		int ProcRpcMsg(const std::string &service_id,
-				const std::string &method_id,
-				const std::string &serialized_data,
-				const std::shared_ptr<boost::asio::ip::tcp::socket> socket);
+		//arg is server pointer
+		int OnNewConnection();
 
-		void OnCallbackDone(::google::protobuf::Message* response,
-				const std::shared_ptr<boost::asio::ip::tcp::socket> socket);
+		//arg is socket fd waiting for read
+		static void OnNewMessage(const int socket);
+
+		static void OnCallbackDone(::google::protobuf::Message* response,
+				const int fd);
 
 	private:
-		std::string ip_;
-		int port_;
-
 		struct ServiceInfo {
 			::google::protobuf::Service *service;
 			std::map<std::string, const ::google::protobuf::MethodDescriptor *> 
 				mdescriptor;
 		};
-		std::map<std::string, ServiceInfo> services_;
+		static std::map<std::string, ServiceInfo> services_;
+
+		//epoll fd
+		int epfd_;
+		//listen fd
+		int listen_fd_;
 };
 
 

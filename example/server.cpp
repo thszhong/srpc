@@ -1,40 +1,38 @@
 #include <string>
 #include <fstream>
+#include <unistd.h>
+#include <atomic>
 
 #include "server.h"
 #include "echo.pb.h"
 
+std::atomic<int> g_index(1);
 
 class EchoServiceImpl : public ::echo::EchoService {
 	public:
 		EchoServiceImpl() {
-			_index = std::make_shared<int>();
-			*_index = 0;
 		}
 
 		void Get(::google::protobuf::RpcController * controller, 
 				const ::echo::EchoRequest *request,
 				::echo::EchoResponse *response,
 				::google::protobuf::Closure *done) {
-			std::cout << "receive " << request->question() << std::endl;
-
-			response->set_result(*_index);
-			*_index = *_index + 1;
+			while (rand() & 0x0001) {
+				usleep(1000);
+			}
+			response->set_result(g_index);
+			g_index++;
 
 			done->Run();
 		}
 	private:
-		std::shared_ptr<int> _index;
 };
 
 
 int main() {
-
-	std::cout << "ready" << std::endl;
+	srand((unsigned int)time(NULL));
 	::echo::EchoService *es_ptr = new EchoServiceImpl();
-	std::cout << "ready2" << std::endl;
 	Server server;
-	std::cout << "ready3" << std::endl;
 	if (0 != server.AddService(es_ptr, false)) {
 		std::cout << "register service failed" << std::endl;
 		return -1;
@@ -44,6 +42,8 @@ int main() {
 	if (0 != server.Start("127.0.0.1", 12321)) {
 		std::cout << "Start server failed. " << std::endl;
 	}
+
+	delete es_ptr;
 
 	return 0;
 }
