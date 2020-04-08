@@ -30,28 +30,27 @@ int go(int thread_index, int times) {
 	echo::EchoService_Stub stub(&channel);
 
 	Controller cntl;
+	uint64_t log_id = (thread_index << 32) | times;
+	cntl.SetLogId(log_id);
+
 	stub.Get(&cntl, &req, &resp, nullptr);
 
+	std::cout << "call" 
+			<< (cntl.GetLogId() >> 32) << "." << (cntl.GetLogId() & 0x0000ffff); 
 	if (cntl.Failed()) {
-		std::cout << "thread " << thread_index 
-			<< " index " << times 
-			<< " fail." << cntl.ErrorText() 
-			<< std::endl;
+		std::cout << " fail." << std::endl << cntl.ErrorText() << std::endl;
 		return -1;
 	} else {
-		std::cout << "thread: " << thread_index 
-			<< " index: " << times 
-			<< " resp: " << resp.index()
+		std::cout << "success." << std::endl;
+		std::cout << "svr index: " << resp.index() 
+			<< "element size: " << resp.sorted_data_size()
 			<< std::endl;
+		std::cout << "" << resp.index() << std::endl;
+		if (resp.sum() != sum) {
+			std::cout << "sum error" << std::endl;  
+			std::cout << "sum: " << sum << " " << resp.sum() << std::endl;
+		}
 	}
-	if (resp.sum() != sum) {
-		std::cout << "thread: " << thread_index 
-			<< " index: " << times 
-			<< " resp index: " << resp.index()
-			<< " sum: " << sum << " " << resp.sum() 
-			<< std::endl;
-	}
-
 
 	return 0;
 }

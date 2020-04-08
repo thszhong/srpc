@@ -5,9 +5,14 @@
 
 #include <google/protobuf/service.h>
 
+typedef uint64_t CallId;
+
 class Controller : public google::protobuf::RpcController {
 	public:
-		Controller() { Reset(); }
+		Controller() { 
+			Reset(); 
+			call_id_ = rand();
+		}
 		virtual ~Controller() {}
 
 		virtual void Reset() { 
@@ -22,9 +27,17 @@ class Controller : public google::protobuf::RpcController {
 		virtual bool IsCanceled() const  { return false; }
 		virtual void NotifyOnCancel(google::protobuf::Closure *) {  }
 
+		CallId GetCallId() { return call_id_; }
+
+		void SetLogId(uint64_t log_id) { log_id_ = log_id; }
+		uint64_t GetLogId() { return log_id_; }
 
 	private:
 		bool is_failed_;
 		std::string err_info_;
+
+		CallId call_id_;
+
+		uint64_t log_id_;
 };
 #endif //__CONTROLLER_H__
