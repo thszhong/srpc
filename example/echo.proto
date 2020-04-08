@@ -4,12 +4,14 @@ option cc_generic_services = true;
  
 message EchoRequest
 {
-	string question = 1;
+	repeated int32 data = 1;
 };
 
 message EchoResponse
 {
-	int32 result = 1;
+	repeated int32 sorted_data = 1;
+	int32 sum = 2;
+	int32 index = 3;
 };
 
 service EchoService

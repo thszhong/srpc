@@ -1,3 +1,4 @@
+#include <time.h>
 #include <string>
 #include <fstream>
 #include <thread>
@@ -6,12 +7,19 @@
 #include "channel.h"
 #include "controller.h"
 
-const static int MAX_TIMES_PER_THREAD = 10000;
+const static int MAX_TIMES_PER_THREAD = 100;
 const static int THREAD_NUM = 10;
 
 int go(int thread_index, int times) {
 	echo::EchoRequest req;
-	req.set_question("coco cola");
+
+	int sum = 0;
+	for (size_t i = 0; i < (rand() % 5) + 1; ++i) {
+		int r = rand();
+		req.add_data(r);
+		sum += r;
+	}
+
 	echo::EchoResponse resp;
 
 	Channel channel;
@@ -29,12 +37,22 @@ int go(int thread_index, int times) {
 			<< " index " << times 
 			<< " fail." << cntl.ErrorText() 
 			<< std::endl;
+		return -1;
 	} else {
 		std::cout << "thread: " << thread_index 
 			<< " index: " << times 
-			<< " resp: " << resp.result()
+			<< " resp: " << resp.index()
 			<< std::endl;
 	}
+	if (resp.sum() != sum) {
+		std::cout << "thread: " << thread_index 
+			<< " index: " << times 
+			<< " resp index: " << resp.index()
+			<< " sum: " << sum << " " << resp.sum() 
+			<< std::endl;
+	}
+
+
 	return 0;
 }
 void thread_run(int thread_index) {
@@ -46,6 +64,7 @@ void thread_run(int thread_index) {
 }
 
 int main() {
+	srand((unsigned int)time(NULL));
 	std::vector<std::thread> threads(THREAD_NUM);
 	for (int i = 0; i < THREAD_NUM; ++i) {
 		threads[i] = std::thread(thread_run, i);

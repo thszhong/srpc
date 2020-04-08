@@ -20,8 +20,20 @@ class EchoServiceImpl : public ::echo::EchoService {
 			while (rand() & 0x0001) {
 				usleep(1000);
 			}
-			response->set_result(g_index);
+			response->set_index(g_index);
 			g_index++;
+
+			std::vector<int> v;
+			for (int i = 0; i < request->data_size(); ++i) {
+				v.push_back(request->data(i));
+			}
+			std::sort(v.begin(), v.end());
+			int s = 0;
+			for (auto d : v) {
+				response->add_sorted_data(d);
+				s += d;
+			}
+			response->set_sum(s);
 
 			done->Run();
 		}

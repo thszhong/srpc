@@ -161,6 +161,7 @@ void Server::OnNewMessage(const int fd) {
 	rpc_meta.ParseFromString(std::string(&(meta_buf[0]), meta_buf.size()));
 	std::cout << "data len: " << rpc_meta.data_size() << std::endl;
 	std::vector<char> request_data(rpc_meta.data_size(), 0);
+	//!TODO if data_size() == 0, recv will be block here.
 	num_read = recv(fd,
 			(char *)&(request_data[0]), rpc_meta.data_size(),
 			MSG_WAITALL);
