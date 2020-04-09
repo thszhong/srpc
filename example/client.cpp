@@ -7,8 +7,8 @@
 #include "channel.h"
 #include "controller.h"
 
-const static int MAX_TIMES_PER_THREAD = 10;
-const static int THREAD_NUM = 10;
+const static int MAX_TIMES_PER_THREAD = 100;
+const static int THREAD_NUM = 20;
 
 int go(int thread_index, int times) {
 	echo::EchoRequest req;
@@ -39,10 +39,10 @@ int go(int thread_index, int times) {
 		printf("call error. %d.%d, %s\n",
 				((uint64_t)cntl.GetLogId() >> 40),
 				(cntl.GetLogId() & 0x0000ffff), 
-				cntl.ErrorText().c_str();
+				cntl.ErrorText().c_str());
 		return -1;
 	} else {
-		printf("Call Success. %d.%d. svr Index: %d, ele size: %d, sum:%s(%d/%d)", 
+		printf("Call Success. %d.%d. svr Index: %d, ele size: %d, sum:%s(%d/%d)\n", 
 			((uint64_t)cntl.GetLogId() >> 40) , 
 			(cntl.GetLogId() & 0x0000ffff), 
 			resp.index(), 
