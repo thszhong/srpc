@@ -82,7 +82,7 @@ int Server::Start(std::string ip, int port) {
 	while (true) {
 		struct epoll_event events[MAX_EVENTS];
 		int num_fd = epoll_wait(epfd_, events, MAX_EVENTS, -1);
-		std::cout << "epoll wait event num: " << num_fd << std::endl; 
+		//std::cout << "epoll wait event num: " << num_fd << std::endl; 
 		if (num_fd < 0) {
 			perror("epool_warit failed.");
 			return -1;
@@ -111,62 +111,82 @@ int Server::OnNewConnection() {
 	//accept
 	struct sockaddr_in remote_addr;
 	socklen_t sock_len; 
-	auto conn_fd = accept(listen_fd_, 
-			(struct sockaddr *)&remote_addr, &sock_len);
-	if (conn_fd < 0) {
-		perror("accept failed.");
-		return -1;
+	int conn_fd;
+	while ((conn_fd = accept(listen_fd_, 
+			(struct sockaddr *)&remote_addr, &sock_len)) > 0) {
+		SetNonblocking(conn_fd);
+		//create READ event
+		struct epoll_event ev;
+		ev.events = EPOLLIN | EPOLLET;
+		ev.data.fd = conn_fd;
+		if (epoll_ctl(epfd_, EPOLL_CTL_ADD, conn_fd, &ev) < 0) {
+			close(conn_fd);
+			perror("epoll ctl failed.");
+			return -1;
+		}
+
+		//char *str = inet_ntoa(remote_addr.sin_addr);
+		//std::cout << "accept a connection from client:" << str << std::endl;
 	}
 
-	//create READ event
-	struct epoll_event ev;
-	ev.events = EPOLLIN | EPOLLET;
-	ev.data.fd = conn_fd;
-	if (epoll_ctl(epfd_, EPOLL_CTL_ADD, conn_fd, &ev) < 0) {
-		close(conn_fd);
-		perror("epoll ctl failed.");
-		return -1;
-	}
-
-	char *str = inet_ntoa(remote_addr.sin_addr);
-	std::cout << "accept a connection from client:" << str << std::endl;
+	if (conn_fd == -1) {
+		if (EAGAIN != errno && ECONNABORTED != errno && EPROTO != errno 
+				&& EINTR != errno) {
+			perror("accept");
+			return -1;
+		}
+	}	
 	return 0;
+}
+
+int RecvMsg(int fd, char *buf, int len) {
+	if (buf == nullptr) {
+		return -1;
+	}
+
+	int num_read = 0;
+	do {
+		num_read = recv(fd, buf, len, MSG_WAITALL);
+		if (num_read < 0) {
+			if (errno == EAGAIN) { break; }
+			if (EINTR == errno) { continue; }
+			//TODO del epoll event for fd
+			return -1;
+		} 
+		break;
+	}  while(true);
+	return num_read;
 }
 
 void Server::OnNewMessage(const int fd) {
 	int rpc_meta_len;
-	int num_read = recv(fd, (char *)&rpc_meta_len, sizeof(int), MSG_WAITALL);
+	int num_read = RecvMsg(fd, (char *)&rpc_meta_len, sizeof(int));
 	if (num_read < 0) {
-		close(fd);
-		if (errno == EAGAIN) {
-			std::cout << "recv EAGIN" << std::endl;
-			return ;
-		}
-		else if (errno == ECONNRESET) {
-			return ;
-		}
 		std::cout << "recv error" << std::endl;
-		return ;
-	} else if (num_read == 0) {
 		close(fd);
-		std::cout << "client close " << std::endl;
-		return ;
-	}
-	std::cout << num_read << " rpc_meta_len: " << rpc_meta_len << std::endl;
+		exit(-1);
+	} else if (num_read == 0) { return ; }
+	printf("recv info meta size : %d\n", rpc_meta_len);
 	std::vector<char> meta_buf(rpc_meta_len, 0);
-	num_read = recv(fd, 
-			(char *)&(meta_buf[0]), rpc_meta_len, 
-			MSG_WAITALL);
+	num_read = RecvMsg(fd, (char *)&(meta_buf[0]), rpc_meta_len);
+	if (num_read < 0) {
+		std::cout << "recv error" << std::endl;
+		close(fd);
+		exit(-1);
+	} else if (num_read == 0) { return ; }
 	srpc::RpcMeta rpc_meta;
 	rpc_meta.ParseFromString(std::string(&(meta_buf[0]), meta_buf.size()));
-	std::cout << "data len: " << rpc_meta.data_size() << std::endl;
+	//std::cout << "data len: " << rpc_meta.data_size() << std::endl;
 	std::vector<char> request_data(rpc_meta.data_size(), 0);
 	//!TODO if data_size() == 0, recv will be block here.
-	num_read = recv(fd,
-			(char *)&(request_data[0]), rpc_meta.data_size(),
-			MSG_WAITALL);
+	num_read = RecvMsg(fd, (char *)&(request_data[0]), rpc_meta.data_size());
+	if (num_read < 0) {
+		std::cout << "recv error" << std::endl;
+		close(fd);
+		exit(-1);
+	} else if (num_read == 0) { return ; }
 
-//	std::cout << "recev info meta size : " << rpc_meta_len<< std::endl;
+	//
 //	std::cout << "recev info data size : " << rpc_meta.data_size() << std::endl;
 //	std::cout << "recev info service : " << rpc_meta.service_id() << std::endl;
 //	std::cout << "recev info method : " << rpc_meta.method_id() << std::endl;

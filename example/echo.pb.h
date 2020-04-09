@@ -184,32 +184,29 @@ class EchoRequest PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kQuestionFieldNumber = 1,
+    kDataFieldNumber = 1,
   };
-  // string question = 1;
-  void clear_question();
-  const std::string& question() const;
-  void set_question(const std::string& value);
-  void set_question(std::string&& value);
-  void set_question(const char* value);
-  void set_question(const char* value, size_t size);
-  std::string* mutable_question();
-  std::string* release_question();
-  void set_allocated_question(std::string* question);
-  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
-  "    string fields are deprecated and will be removed in a"
-  "    future release.")
-  std::string* unsafe_arena_release_question();
-  GOOGLE_PROTOBUF_RUNTIME_DEPRECATED("The unsafe_arena_ accessors for"
-  "    string fields are deprecated and will be removed in a"
-  "    future release.")
-  void unsafe_arena_set_allocated_question(
-      std::string* question);
+  // repeated int32 data = 1;
+  int data_size() const;
   private:
-  const std::string& _internal_question() const;
-  void _internal_set_question(const std::string& value);
-  std::string* _internal_mutable_question();
+  int _internal_data_size() const;
   public:
+  void clear_data();
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_data(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      _internal_data() const;
+  void _internal_add_data(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      _internal_mutable_data();
+  public:
+  ::PROTOBUF_NAMESPACE_ID::int32 data(int index) const;
+  void set_data(int index, ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void add_data(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      data() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      mutable_data();
 
   // @@protoc_insertion_point(class_scope:echo.EchoRequest)
  private:
@@ -218,7 +215,8 @@ class EchoRequest PROTOBUF_FINAL :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr question_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > data_;
+  mutable std::atomic<int> _data_cached_byte_size_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_echo_2eproto;
 };
@@ -337,15 +335,48 @@ class EchoResponse PROTOBUF_FINAL :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kResultFieldNumber = 1,
+    kSortedDataFieldNumber = 1,
+    kSumFieldNumber = 2,
+    kIndexFieldNumber = 3,
   };
-  // int32 result = 1;
-  void clear_result();
-  ::PROTOBUF_NAMESPACE_ID::int32 result() const;
-  void set_result(::PROTOBUF_NAMESPACE_ID::int32 value);
+  // repeated int32 sorted_data = 1;
+  int sorted_data_size() const;
   private:
-  ::PROTOBUF_NAMESPACE_ID::int32 _internal_result() const;
-  void _internal_set_result(::PROTOBUF_NAMESPACE_ID::int32 value);
+  int _internal_sorted_data_size() const;
+  public:
+  void clear_sorted_data();
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_sorted_data(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      _internal_sorted_data() const;
+  void _internal_add_sorted_data(::PROTOBUF_NAMESPACE_ID::int32 value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      _internal_mutable_sorted_data();
+  public:
+  ::PROTOBUF_NAMESPACE_ID::int32 sorted_data(int index) const;
+  void set_sorted_data(int index, ::PROTOBUF_NAMESPACE_ID::int32 value);
+  void add_sorted_data(::PROTOBUF_NAMESPACE_ID::int32 value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+      sorted_data() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+      mutable_sorted_data();
+
+  // int32 sum = 2;
+  void clear_sum();
+  ::PROTOBUF_NAMESPACE_ID::int32 sum() const;
+  void set_sum(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_sum() const;
+  void _internal_set_sum(::PROTOBUF_NAMESPACE_ID::int32 value);
+  public:
+
+  // int32 index = 3;
+  void clear_index();
+  ::PROTOBUF_NAMESPACE_ID::int32 index() const;
+  void set_index(::PROTOBUF_NAMESPACE_ID::int32 value);
+  private:
+  ::PROTOBUF_NAMESPACE_ID::int32 _internal_index() const;
+  void _internal_set_index(::PROTOBUF_NAMESPACE_ID::int32 value);
   public:
 
   // @@protoc_insertion_point(class_scope:echo.EchoResponse)
@@ -355,7 +386,10 @@ class EchoResponse PROTOBUF_FINAL :
   template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
-  ::PROTOBUF_NAMESPACE_ID::int32 result_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 > sorted_data_;
+  mutable std::atomic<int> _sorted_data_cached_byte_size_;
+  ::PROTOBUF_NAMESPACE_ID::int32 sum_;
+  ::PROTOBUF_NAMESPACE_ID::int32 index_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_echo_2eproto;
 };
@@ -429,110 +463,142 @@ class EchoService_Stub : public EchoService {
 #endif  // __GNUC__
 // EchoRequest
 
-// string question = 1;
-inline void EchoRequest::clear_question() {
-  question_.ClearToEmpty(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+// repeated int32 data = 1;
+inline int EchoRequest::_internal_data_size() const {
+  return data_.size();
 }
-inline const std::string& EchoRequest::question() const {
-  // @@protoc_insertion_point(field_get:echo.EchoRequest.question)
-  return _internal_question();
+inline int EchoRequest::data_size() const {
+  return _internal_data_size();
 }
-inline void EchoRequest::set_question(const std::string& value) {
-  _internal_set_question(value);
-  // @@protoc_insertion_point(field_set:echo.EchoRequest.question)
+inline void EchoRequest::clear_data() {
+  data_.Clear();
 }
-inline std::string* EchoRequest::mutable_question() {
-  // @@protoc_insertion_point(field_mutable:echo.EchoRequest.question)
-  return _internal_mutable_question();
+inline ::PROTOBUF_NAMESPACE_ID::int32 EchoRequest::_internal_data(int index) const {
+  return data_.Get(index);
 }
-inline const std::string& EchoRequest::_internal_question() const {
-  return question_.Get();
+inline ::PROTOBUF_NAMESPACE_ID::int32 EchoRequest::data(int index) const {
+  // @@protoc_insertion_point(field_get:echo.EchoRequest.data)
+  return _internal_data(index);
 }
-inline void EchoRequest::_internal_set_question(const std::string& value) {
-  
-  question_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value, GetArena());
+inline void EchoRequest::set_data(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
+  data_.Set(index, value);
+  // @@protoc_insertion_point(field_set:echo.EchoRequest.data)
 }
-inline void EchoRequest::set_question(std::string&& value) {
-  
-  question_.Set(
-    &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value), GetArena());
-  // @@protoc_insertion_point(field_set_rvalue:echo.EchoRequest.question)
+inline void EchoRequest::_internal_add_data(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  data_.Add(value);
 }
-inline void EchoRequest::set_question(const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  
-  question_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value),
-              GetArena());
-  // @@protoc_insertion_point(field_set_char:echo.EchoRequest.question)
+inline void EchoRequest::add_data(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_add_data(value);
+  // @@protoc_insertion_point(field_add:echo.EchoRequest.data)
 }
-inline void EchoRequest::set_question(const char* value,
-    size_t size) {
-  
-  question_.Set(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(
-      reinterpret_cast<const char*>(value), size), GetArena());
-  // @@protoc_insertion_point(field_set_pointer:echo.EchoRequest.question)
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+EchoRequest::_internal_data() const {
+  return data_;
 }
-inline std::string* EchoRequest::_internal_mutable_question() {
-  
-  return question_.Mutable(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+EchoRequest::data() const {
+  // @@protoc_insertion_point(field_list:echo.EchoRequest.data)
+  return _internal_data();
 }
-inline std::string* EchoRequest::release_question() {
-  // @@protoc_insertion_point(field_release:echo.EchoRequest.question)
-  
-  return question_.Release(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), GetArena());
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+EchoRequest::_internal_mutable_data() {
+  return &data_;
 }
-inline void EchoRequest::set_allocated_question(std::string* question) {
-  if (question != nullptr) {
-    
-  } else {
-    
-  }
-  question_.SetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), question,
-      GetArena());
-  // @@protoc_insertion_point(field_set_allocated:echo.EchoRequest.question)
-}
-inline std::string* EchoRequest::unsafe_arena_release_question() {
-  // @@protoc_insertion_point(field_unsafe_arena_release:echo.EchoRequest.question)
-  GOOGLE_DCHECK(GetArena() != nullptr);
-  
-  return question_.UnsafeArenaRelease(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      GetArena());
-}
-inline void EchoRequest::unsafe_arena_set_allocated_question(
-    std::string* question) {
-  GOOGLE_DCHECK(GetArena() != nullptr);
-  if (question != nullptr) {
-    
-  } else {
-    
-  }
-  question_.UnsafeArenaSetAllocated(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
-      question, GetArena());
-  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:echo.EchoRequest.question)
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+EchoRequest::mutable_data() {
+  // @@protoc_insertion_point(field_mutable_list:echo.EchoRequest.data)
+  return _internal_mutable_data();
 }
 
 // -------------------------------------------------------------------
 
 // EchoResponse
 
-// int32 result = 1;
-inline void EchoResponse::clear_result() {
-  result_ = 0;
+// repeated int32 sorted_data = 1;
+inline int EchoResponse::_internal_sorted_data_size() const {
+  return sorted_data_.size();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 EchoResponse::_internal_result() const {
-  return result_;
+inline int EchoResponse::sorted_data_size() const {
+  return _internal_sorted_data_size();
 }
-inline ::PROTOBUF_NAMESPACE_ID::int32 EchoResponse::result() const {
-  // @@protoc_insertion_point(field_get:echo.EchoResponse.result)
-  return _internal_result();
+inline void EchoResponse::clear_sorted_data() {
+  sorted_data_.Clear();
 }
-inline void EchoResponse::_internal_set_result(::PROTOBUF_NAMESPACE_ID::int32 value) {
+inline ::PROTOBUF_NAMESPACE_ID::int32 EchoResponse::_internal_sorted_data(int index) const {
+  return sorted_data_.Get(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 EchoResponse::sorted_data(int index) const {
+  // @@protoc_insertion_point(field_get:echo.EchoResponse.sorted_data)
+  return _internal_sorted_data(index);
+}
+inline void EchoResponse::set_sorted_data(int index, ::PROTOBUF_NAMESPACE_ID::int32 value) {
+  sorted_data_.Set(index, value);
+  // @@protoc_insertion_point(field_set:echo.EchoResponse.sorted_data)
+}
+inline void EchoResponse::_internal_add_sorted_data(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  sorted_data_.Add(value);
+}
+inline void EchoResponse::add_sorted_data(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_add_sorted_data(value);
+  // @@protoc_insertion_point(field_add:echo.EchoResponse.sorted_data)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+EchoResponse::_internal_sorted_data() const {
+  return sorted_data_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >&
+EchoResponse::sorted_data() const {
+  // @@protoc_insertion_point(field_list:echo.EchoResponse.sorted_data)
+  return _internal_sorted_data();
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+EchoResponse::_internal_mutable_sorted_data() {
+  return &sorted_data_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< ::PROTOBUF_NAMESPACE_ID::int32 >*
+EchoResponse::mutable_sorted_data() {
+  // @@protoc_insertion_point(field_mutable_list:echo.EchoResponse.sorted_data)
+  return _internal_mutable_sorted_data();
+}
+
+// int32 sum = 2;
+inline void EchoResponse::clear_sum() {
+  sum_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 EchoResponse::_internal_sum() const {
+  return sum_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 EchoResponse::sum() const {
+  // @@protoc_insertion_point(field_get:echo.EchoResponse.sum)
+  return _internal_sum();
+}
+inline void EchoResponse::_internal_set_sum(::PROTOBUF_NAMESPACE_ID::int32 value) {
   
-  result_ = value;
+  sum_ = value;
 }
-inline void EchoResponse::set_result(::PROTOBUF_NAMESPACE_ID::int32 value) {
-  _internal_set_result(value);
-  // @@protoc_insertion_point(field_set:echo.EchoResponse.result)
+inline void EchoResponse::set_sum(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_sum(value);
+  // @@protoc_insertion_point(field_set:echo.EchoResponse.sum)
+}
+
+// int32 index = 3;
+inline void EchoResponse::clear_index() {
+  index_ = 0;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 EchoResponse::_internal_index() const {
+  return index_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::int32 EchoResponse::index() const {
+  // @@protoc_insertion_point(field_get:echo.EchoResponse.index)
+  return _internal_index();
+}
+inline void EchoResponse::_internal_set_index(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  
+  index_ = value;
+}
+inline void EchoResponse::set_index(::PROTOBUF_NAMESPACE_ID::int32 value) {
+  _internal_set_index(value);
+  // @@protoc_insertion_point(field_set:echo.EchoResponse.index)
 }
 
 #ifdef __GNUC__

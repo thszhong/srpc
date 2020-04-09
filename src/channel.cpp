@@ -58,7 +58,6 @@ void Channel::CallMethod(const ::google::protobuf::MethodDescriptor *method,
 	meta.set_service_id(method->service()->name());
 	meta.set_method_id(method->name());
 	meta.set_data_size(data_str.size());
-	meta.set_call_id();
 	std::string meta_str;
 	meta.SerializeToString(&meta_str);
 
@@ -68,25 +67,29 @@ void Channel::CallMethod(const ::google::protobuf::MethodDescriptor *method,
 	serialized_str += meta_str;
 	serialized_str += data_str;
 
-//  std::cout << "----------------------" << std::endl;
-//	std::cout << "send info service " << meta.service_id() << std::endl;
-//	std::cout << "send info method " << meta.method_id() << std::endl;
-	std::cout << "send info meta size " << meta_str.size() << std::endl;
-	std::cout << "send info data size " << meta.data_size() << std::endl;
+	//std::cout << "----------------------" << std::endl;
+	//std::cout << "send info service " << meta.service_id() << std::endl;
+	//std::cout << "send info method " << meta.method_id() << std::endl;
 
-	std::cout << "client send size " << serialized_str.size() << std::endl;
+	//std::cout  
+	printf("send info meta size %zd\n", meta_str.size());
+	//	<< " send info data size " << meta.data_size() 
+	//	<< " client send size " << serialized_str.size() << std::endl;
 	int nsend = send(fd_, 
 			serialized_str.c_str(), serialized_str.size(),
 			MSG_WAITALL);
 	if (nsend == serialized_str.size()) {
-		std::cout << "client send success." << std::endl;
+		std::cout  
+			<< "client send success." << std::endl;
 	} else {
-		std::cout << "client send status " 
+		std::cout  
+			<< "client send status " 
 			<< nsend << " / " << serialized_str.size() << std::endl;
 		close(fd_);
 		return ;
 	}
 
+	return ;
 	int resp_data_len = 0; 
 	do {
 		int nread = recv(fd_, (char *)&resp_data_len, sizeof(int), MSG_WAITALL);
@@ -94,16 +97,15 @@ void Channel::CallMethod(const ::google::protobuf::MethodDescriptor *method,
 			if (EINTR == errno || EAGAIN == errno) {
 				std::cout << "continue" << std::endl;
 				continue;
-			} else {
-				//close socket
-				close(fd_);
-				return ;
-			}
+			} 
+			//close socket
+			close(fd_);
+			return ;
 		} else {
 			break;
 		}
 	} while(true);
-	std::cout << "recev data len" << resp_data_len << std::endl;
+	std::cout  << "client recv size" << resp_data_len << std::endl;
 	std::vector<char> resp_buf(resp_data_len, 0);
 	recv(fd_, (char *)&resp_buf[0], resp_data_len, MSG_WAITALL);
 //	std::cout << "recev data " << resp_buf << std::endl;

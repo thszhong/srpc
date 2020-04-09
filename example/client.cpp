@@ -7,15 +7,15 @@
 #include "channel.h"
 #include "controller.h"
 
-const static int MAX_TIMES_PER_THREAD = 100;
+const static int MAX_TIMES_PER_THREAD = 10;
 const static int THREAD_NUM = 10;
 
 int go(int thread_index, int times) {
 	echo::EchoRequest req;
 
 	int sum = 0;
-	for (size_t i = 0; i < (rand() % 5) + 1; ++i) {
-		int r = rand();
+	for (size_t i = 0; i < 2; ++i) {
+		int r = rand() % 20743;
 		req.add_data(r);
 		sum += r;
 	}
@@ -30,26 +30,25 @@ int go(int thread_index, int times) {
 	echo::EchoService_Stub stub(&channel);
 
 	Controller cntl;
-	uint64_t log_id = (thread_index << 32) | times;
+	uint64_t log_id = ((uint64_t)thread_index << 40) | times;
 	cntl.SetLogId(log_id);
 
 	stub.Get(&cntl, &req, &resp, nullptr);
 
-	std::cout << "call" 
-			<< (cntl.GetLogId() >> 32) << "." << (cntl.GetLogId() & 0x0000ffff); 
 	if (cntl.Failed()) {
-		std::cout << " fail." << std::endl << cntl.ErrorText() << std::endl;
+		std::cout << "------------call" 
+			<< ((uint64_t)cntl.GetLogId() >> 40) << "." << (cntl.GetLogId() & 0x0000ffff)
+			<< " fail." << std::endl 
+			<< cntl.ErrorText() << std::endl;
 		return -1;
 	} else {
-		std::cout << "success." << std::endl;
-		std::cout << "svr index: " << resp.index() 
-			<< "element size: " << resp.sorted_data_size()
-			<< std::endl;
-		std::cout << "" << resp.index() << std::endl;
-		if (resp.sum() != sum) {
-			std::cout << "sum error" << std::endl;  
-			std::cout << "sum: " << sum << " " << resp.sum() << std::endl;
-		}
+		std::cout << "------------call" 
+			<< ((uint64_t)cntl.GetLogId() >> 40) << "." << (cntl.GetLogId() & 0x0000ffff)
+			<< " success." << std::endl
+			<< " svr index: " << resp.index() 
+			<< " element size: " << resp.sorted_data_size()
+			<< (sum != resp.sum() ? "sum error" : "")  
+			<< " sum: " << sum << " " << resp.sum() << std::endl;
 	}
 
 	return 0;
