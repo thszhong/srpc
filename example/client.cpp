@@ -36,19 +36,20 @@ int go(int thread_index, int times) {
 	stub.Get(&cntl, &req, &resp, nullptr);
 
 	if (cntl.Failed()) {
-		std::cout << "------------call" 
-			<< ((uint64_t)cntl.GetLogId() >> 40) << "." << (cntl.GetLogId() & 0x0000ffff)
-			<< " fail." << std::endl 
-			<< cntl.ErrorText() << std::endl;
+		printf("call error. %d.%d, %s\n",
+				((uint64_t)cntl.GetLogId() >> 40),
+				(cntl.GetLogId() & 0x0000ffff), 
+				cntl.ErrorText().c_str();
 		return -1;
 	} else {
-		std::cout << "------------call" 
-			<< ((uint64_t)cntl.GetLogId() >> 40) << "." << (cntl.GetLogId() & 0x0000ffff)
-			<< " success." << std::endl
-			<< " svr index: " << resp.index() 
-			<< " element size: " << resp.sorted_data_size()
-			<< (sum != resp.sum() ? "sum error" : "")  
-			<< " sum: " << sum << " " << resp.sum() << std::endl;
+		printf("Call Success. %d.%d. svr Index: %d, ele size: %d, sum:%s(%d/%d)", 
+			((uint64_t)cntl.GetLogId() >> 40) , 
+			(cntl.GetLogId() & 0x0000ffff), 
+			resp.index(), 
+			resp.sorted_data_size(), 
+			(sum != resp.sum() ? "sum error" : "") , 
+			sum,
+			resp.sum());
 	}
 
 	return 0;

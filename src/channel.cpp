@@ -79,12 +79,10 @@ void Channel::CallMethod(const ::google::protobuf::MethodDescriptor *method,
 			serialized_str.c_str(), serialized_str.size(),
 			MSG_WAITALL);
 	if (nsend == serialized_str.size()) {
-		std::cout  
-			<< "client send success." << std::endl;
+//		std::cout  << "client send success." << std::endl;
 	} else {
-		std::cout  
-			<< "client send status " 
-			<< nsend << " / " << serialized_str.size() << std::endl;
+		perror("send error\n");
+		printf("client send status %d/%d\n",  nsend, serialized_str.size());
 		close(fd_);
 		return ;
 	}
@@ -105,7 +103,7 @@ void Channel::CallMethod(const ::google::protobuf::MethodDescriptor *method,
 			break;
 		}
 	} while(true);
-	std::cout  << "client recv size" << resp_data_len << std::endl;
+//	std::cout  << "client recv size" << resp_data_len << std::endl;
 	std::vector<char> resp_buf(resp_data_len, 0);
 	recv(fd_, (char *)&resp_buf[0], resp_data_len, MSG_WAITALL);
 //	std::cout << "recev data " << resp_buf << std::endl;
